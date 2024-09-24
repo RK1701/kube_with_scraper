@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blog-scraper-deployment
+spec:
+  replicas: 1  # Number of pod replicas
+  selector:
+    matchLabels:
+      app: blog-scraper
+  template:
+    metadata:
+      labels:
+        app: blog-scraper
+    spec:
+      containers:
+      - name: blog-scraper
+        image: blog_scraper_image:latest  # The Docker image you built
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        env:
+          - name: SCRAPER_ENV
+            value: "production"
+        volumeMounts:
+          - name: output-volume
+            mountPath: /app/output  # Mount volume for output
+      volumes:
+        - name: output-volume
+          emptyDir: {}
+#          hostPath:
+#            path: /kube_with_scraper/output  # Change this to your local output folder path
+#            type: Directory
